@@ -33,6 +33,17 @@
             width: 64px;
             height: 120px;
         }
+
+        .coin { 
+            background-color: cyan; 
+            -webkit-clip-path: polygon(52% 89%, 23% 54%, 41% 34%, 52% 24%, 65% 34%, 77% 56%);
+            clip-path: polygon(52% 89%, 23% 54%, 41% 34%, 52% 24%, 65% 34%, 77% 56%);            
+            z-index: -100; 
+            width: 4em; 
+            height: 4em; 
+        } 
+        
+
     </style>
 </head>
 
@@ -65,8 +76,27 @@
         </div>
     </div>
     <script> 
+        let timePerRequest = 800; 
+
+        function spawnCoins(coins) { // ice shards 
+            for (let i = 0; i < coins; i++) { 
+                document.querySelector(".enemy-sprite").innerHTML += `<button class="coin">coin</button> `; 
+            } 
+            document.querySelectorAll(".enemy-sprite").forEach((coin, index) => { 
+                coin.addEventListener("click", e => { 
+                    // incrementCoinCount(10); 
+                    e.target.remove(); 
+                }); 
+            }); 
+
+            window.setInterval(() => { 
+                document.querySelectorAll(".coin").forEach(coin => { 
+                    coin.remove(); 
+                })
+            }, 4000); 
+        }
+
         function buyWarrior(warriorName) { 
-            console.log(warriorName); 
             fetch('http://localhost:3000/', 
             { 
                 method: "POST", body: JSON.stringify({"content": warriorName})
@@ -108,6 +138,9 @@
         window.setInterval(() => { 
             fetch('http://localhost:3000/').then(res => res.json().then(data =>{ 
                 document.querySelector("#enemy-health-id").innerText = data.enemy.health;  
+                if (Number(data.enemy.health) <= 0 && !data.enemy.exists) { 
+                    spawnCoins(50); 
+                }
             })).catch(err => console.log(err)); 
 
             /* 
@@ -116,7 +149,7 @@
                 method: "POST", body: JSON.stringify({content: "friend"})
             }).catch(err => console.log(err)); 
             */ 
-        }, 1000); 
+        }, timePerRequest); 
 
     </script>
 </body>

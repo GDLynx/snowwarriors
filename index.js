@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
                         content: num, 
                         enemy: 
                             { 
-                                health: enemyHealth
+                                health: enemyHealth, exists: enemyHealth > 0 ? true : false 
                             } 
                     }
                 )); 
