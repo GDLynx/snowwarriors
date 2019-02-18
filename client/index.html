@@ -56,16 +56,15 @@
             <div class="enemy">
                 <div class="enemy-sprite">
                     <img src="https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                    />
+                />
                 </div>
                 <div class="enemy-health">
-                    <b class="red">100</b>
+                    <b id="enemy-health-id" class="red"></b>
                 </div>
             </div>
         </div>
     </div>
     <script> 
-
         function buyWarrior(warriorName) { 
             console.log(warriorName); 
             fetch('http://localhost:3000/', 
@@ -73,6 +72,14 @@
                 method: "POST", body: JSON.stringify({"content": warriorName})
             }).catch(err => console.log(err)); 
         } 
+
+        function removeHealth(damagePerClick) { 
+            console.log("removing health"); 
+            fetch('http://localhost:3000/', 
+            { 
+                method: "POST", body: JSON.stringify({"damage": damagePerClick})
+            }).catch(err => console.log(err)); 
+        }
 
         document.querySelectorAll(".warriors").forEach(warrior => { 
             warrior.addEventListener("click", e => {
@@ -94,17 +101,22 @@
             }); 
         }); 
 
-        /* 
+        document.querySelector(".enemy-sprite").addEventListener("click", e => { 
+            removeHealth(10); // 10 = damage per click 
+        }); 
+
         window.setInterval(() => { 
             fetch('http://localhost:3000/').then(res => res.json().then(data =>{ 
-                document.querySelector(".json").innerText = data.content; 
+                document.querySelector("#enemy-health-id").innerText = data.enemy.health;  
             })).catch(err => console.log(err)); 
+
+            /* 
             fetch('http://localhost:3000/', 
             { 
                 method: "POST", body: JSON.stringify({content: "friend"})
             }).catch(err => console.log(err)); 
+            */ 
         }, 1000); 
-        */
 
     </script>
 </body>
