@@ -1,0 +1,15 @@
+{
+  "name": "snowwarriors",
+  "version": "1.0.0",
+  "description": "an idle game for more than one player to battle against the evils of snow",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js", 
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rest"
+  ],
+  "author": "gdlynx",
+  "license": "ISC"
+}

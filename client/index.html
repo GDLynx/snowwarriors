@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Snow Warriors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Utillities */
+
+        .red {
+            color: red;
+        }
+
+        /* layout */
+
+        .grid {
+            display: flex;
+        }
+
+        /* game entities */
+
+        .warriors div {
+            background-color: cyan;
+            color: blue;
+            width: 4em;
+            height: 4em;
+            margin: 2em 2em 2em 2em;
+        }
+
+        .enemy .enemy-sprite img {
+            width: 64px;
+            height: 120px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="grid">
+            <div class="warriors">
+                <div class="yeti">
+                    yeti
+                </div>
+                <div class="snow-wizard">
+                    snow wizard
+                </div>
+                <div class="snow angel">
+                    snow angel
+                </div>
+                <div class="snow-queen">
+                    snow queen
+                </div>
+            </div>
+            <div class="enemy">
+                <div class="enemy-sprite">
+                    <img src="https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                    />
+                </div>
+                <div class="enemy-health">
+                    <b class="red">100</b>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script> 
+
+        function buyWarrior(warriorName) { 
+            console.log(warriorName); 
+            fetch('http://localhost:3000/', 
+            { 
+                method: "POST", body: JSON.stringify({content: warriorName})
+            }).catch(err => console.log(err)); 
+        } 
+
+        document.querySelectorAll(".warriors").forEach(warrior => { 
+            warrior.addEventListener("click", e => {
+                switch (e.target.innerText) { 
+                    case "yeti": 
+                        buyWarrior("yeti");                        
+                        break; 
+                    case "snow wizard": 
+                        buyWarrior("snow-wizard");                        
+                        break; 
+                    case "snow angel": 
+                        buyWarrior("snow-angel");                        
+                        break; 
+                    case "snow queen": 
+                        buyWarrior("snow-queen");                        
+                        break; 
+
+                }
+            }); 
+        }); 
+
+        /* 
+        window.setInterval(() => { 
+            fetch('http://localhost:3000/').then(res => res.json().then(data =>{ 
+                document.querySelector(".json").innerText = data.content; 
+            })).catch(err => console.log(err)); 
+            fetch('http://localhost:3000/', 
+            { 
+                method: "POST", body: JSON.stringify({content: "friend"})
+            }).catch(err => console.log(err)); 
+        }, 1000); 
+        */
+
+    </script>
+</body>
+
+</html>
