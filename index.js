@@ -17,7 +17,7 @@ let game = {
     enemy: { 
         image: "", 
         health: 100, 
-        name: 0 
+        name: "snow-wolf"
     }, 
     canDispenseCoins: false 
 }
@@ -29,7 +29,10 @@ const server = http.createServer((req, res) => {
     res.setHeader("Content-Type", "text/json");    
     if (req.method == "GET" || req.method == "get") { 
         switch (req.url) { 
-            case "/update":
+            case "/":
+                game.enemy.image = "https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+                res.write(JSON.stringify(game)); 
+                res.end();
                 break; 
             case "/removeEnemyHealthYeti": 
                 break; 
@@ -64,7 +67,7 @@ server.listen(port);
             enemy: { 
                 image: "", 
                 health: 100, 
-                name: 0 
+                name: "snow-wolf" 
             }, 
             canDispenseCoins: false 
         }

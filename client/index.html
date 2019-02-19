@@ -66,8 +66,7 @@
             </div>
             <div class="enemy">
                 <div class="enemy-sprite">
-                    <img src="https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                />
+                    <img src="" />
                 </div>
                 <div class="enemy-health">
                     <b id="enemy-health-id" class="red"></b>
@@ -76,6 +75,7 @@
         </div>
     </div>
     <script> 
+
         let timePerRequest = 800; 
 
         function spawnCoins(coins) { // ice shards 
@@ -136,11 +136,14 @@
         }); 
 
         window.setInterval(() => { 
-            fetch('http://localhost:3000/').then(res => res.json().then(data =>{ 
-                document.querySelector("#enemy-health-id").innerText = data.enemy.health;  
-                if (Number(data.enemy.health) <= 0 && !data.enemy.exists) { 
-                    spawnCoins(50); 
-                }
+            /* "
+            clientSideGame" is the client side representation of the game [object], but tthese are too be 
+            kept seperate as the client-side game will likely always be one step in front/behind the 
+            original [server side] game object 
+            */ 
+            fetch('http://localhost:3000/').then(res => res.json().then(clientSideGame => { 
+                document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image; 
+                console.log(clientSideGame.enemy.image); // https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500
             })).catch(err => console.log(err)); 
 
             /* 
