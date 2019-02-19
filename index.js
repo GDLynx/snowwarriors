@@ -12,6 +12,9 @@ const server = http.createServer((req, res) => {
     switch (req.url) { 
         case "/":         
             if (req.method == "GET" || req.method == "get") { 
+                if (enemyHealth <= 0) { 
+                    enemyHealth = 100; 
+                } 
                 res.write(JSON.stringify(
                     { 
                         content: num, 
@@ -32,6 +35,11 @@ const server = http.createServer((req, res) => {
                 req.on('end', () => {
                     // console.log(JSON.parse(body).content); 
                     enemyHealth -= JSON.parse(body).damage; 
+                    /* 
+                    if (enemyHealth <= 0) { 
+                        enemyHealth = 100; 
+                    } 
+                    */ 
                 }); 
                 num++; 
             }
