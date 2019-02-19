@@ -1,4 +1,8 @@
 const http = require("http"); 
+const events = require('./events');
+// const EventEmitter = require('events');
+
+// class MyEmitter extends EventEmitter {}
 
 const port =  3000; 
 
@@ -25,14 +29,38 @@ let game = {
 
 const server = http.createServer((req, res) => { 
     // console.log(`Listening on port ${port}`)
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Content-Type", "text/json");    
+    res.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:8080");
+    // res.setHeader("Content-Type", "text/json");    
+    res.setHeader("Content-Type", "text/event-stream");    
+    res.setHeader("Access-Control-Allow-Credentials", "true"); 
     if (req.method == "GET" || req.method == "get") { 
         switch (req.url) { 
-            case "/":
+            case "/": 
+                /* 
+                console.log("accepting request"); 
                 game.enemy.image = "https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
                 res.write(JSON.stringify(game)); 
                 res.end();
+                */ 
+                // console.log("subscribing"); 
+                game.enemy.image = "https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+                events.subscribe(req, res); 
+                events.publish(game); 
+                /* 
+                const myEmitter = new MyEmitter();
+                myEmitter.on('event', () => {
+                    console.log('an event occurred!');
+                }); 
+                myEmitter.emit('event');
+                */ 
+               console.log("root"); // is output 
+                break; 
+            case "/removeHealthOnTap": 
+                game.enemy.health -= 10;  
+                events.subscribe(req, res); 
+                events.publish(game);
+                // console.log(game.enemy); 
+                // will likekly also need to detect and handle the enemy's death 
                 break; 
             case "/removeEnemyHealthYeti": 
                 break; 
@@ -73,9 +101,8 @@ server.listen(port);
         }
 
     routes [ - actions]: 
-        /update - triggered by setInterval, this route will also determine whether the client should dispense coins 
+        / - triggered by setInterval, this route will also determine whether the client should dispense coins 
             [still unsure about how they will be removed] 
-            [may instead be the root ["/"] index ]
         /removeEnemyHealthYeti - yetiDamage * yeti 
                                     [where yeti is the number of yetis]
         /removeEnemyHealthSnowWizard - enemy.health - snowWizardDamage * snowWizard 

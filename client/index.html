@@ -69,81 +69,40 @@
                     <img src="" />
                 </div>
                 <div class="enemy-health">
-                    <b id="enemy-health-id" class="red"></b>
+                    <b class="red"></b>
                 </div>
             </div>
         </div>
     </div>
     <script> 
 
-        let timePerRequest = 800; 
-
-        function spawnCoins(coins) { // ice shards 
-            for (let i = 0; i < coins; i++) { 
-                document.querySelector(".enemy-sprite").innerHTML += `<button class="coin">coin</button> `; 
-            } 
-            document.querySelectorAll(".enemy-sprite").forEach((coin, index) => { 
-                coin.addEventListener("click", e => { 
-                    // incrementCoinCount(10); 
-                    e.target.remove(); 
-                }); 
-            }); 
-
-            window.setInterval(() => { 
-                document.querySelectorAll(".coin").forEach(coin => { 
-                    coin.remove(); 
-                })
-            }, 4000); 
-        }
-
-        function buyWarrior(warriorName) { 
-            fetch('http://localhost:3000/', 
-            { 
-                method: "POST", body: JSON.stringify({"content": warriorName})
-            }).catch(err => console.log(err)); 
-        } 
-
-        function removeHealth(damagePerClick) { 
-            console.log("removing health"); 
-            fetch('http://localhost:3000/', 
-            { 
-                method: "POST", body: JSON.stringify({"damage": damagePerClick})
-            }).catch(err => console.log(err)); 
-        }
-
-        document.querySelectorAll(".warriors").forEach(warrior => { 
-            warrior.addEventListener("click", e => {
-                switch (e.target.innerText) { 
-                    case "yeti": 
-                        buyWarrior("yeti");                        
-                        break; 
-                    case "snow wizard": 
-                        buyWarrior("snow-wizard");                        
-                        break; 
-                    case "snow angel": 
-                        buyWarrior("snow-angel");                        
-                        break; 
-                    case "snow queen": 
-                        buyWarrior("snow-queen");                        
-                        break; 
-
-                }
-            }); 
-        }); 
+        let timePerRequest = 3000; 
+        // let rootDomain = "http://127.0.0.1:8080"; 
+        let rootDomain = "http://127.0.0.1:3000"; 
 
         document.querySelector(".enemy-sprite").addEventListener("click", e => { 
-            removeHealth(10); // 10 = damage per click 
+            fetch(`${rootDomain}/removeHealthOnTap`); 
         }); 
+    
+        const evtSource = new EventSource(`${rootDomain}/`, {withCredentials: true});
+        evtSource.addEventListener('event', function(evt) {
+            const clientSideGame = JSON.parse(evt.data);
+            console.log(clientSideGame); // is never logged 
+            document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image; 
+            document.querySelector(".enemy-health b").innerText = clientSideGame.enemy.health; 
+        }, false); 
 
+        /* 
         window.setInterval(() => { 
             /* "
             clientSideGame" is the client side representation of the game [object], but tthese are too be 
             kept seperate as the client-side game will likely always be one step in front/behind the 
             original [server side] game object 
-            */ 
+            * 
             fetch('http://localhost:3000/').then(res => res.json().then(clientSideGame => { 
                 document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image; 
-                console.log(clientSideGame.enemy.image); // https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500
+                document.querySelector(".enemy-health b").innerText = clientSideGame.enemy.health; 
+                console.log("Upadting"); 
             })).catch(err => console.log(err)); 
 
             /* 
@@ -151,8 +110,9 @@
             { 
                 method: "POST", body: JSON.stringify({content: "friend"})
             }).catch(err => console.log(err)); 
-            */ 
+            * 
         }, timePerRequest); 
+        */ 
 
     </script>
 </body>
