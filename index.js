@@ -15,6 +15,7 @@ const server = http.createServer((req, res) => {
                 if (enemyHealth <= 0) { 
                     enemyHealth = 100; 
                 } 
+                // may be extracted to game object 
                 res.write(JSON.stringify(
                     { 
                         content: num, 
@@ -48,3 +49,36 @@ const server = http.createServer((req, res) => {
 }); 
 
 server.listen(port); 
+
+/* 
+    game: 
+        {  
+            player:  {
+                    count: 0, 
+                    health: 100, 
+                    coins: 0
+                    warriors: { 
+                        yeti: 0, 
+                        snowWizard: 0, 
+                        snowAngel: 0, 
+                        snowQueen: 0 
+                    }
+                }, 
+            enemy: { 
+                image: "", 
+                health: 100, 
+                name: 0 
+            }, 
+            canDispenseCoins: false 
+        }
+
+    routes [ - actions]; 
+        /update - triggered by setInterval, this route will also determine whether the client should dispense coins 
+            [still unsure about how they will be removed] 
+                                        [where yeti is the number of yetis]
+        /removeEnemyHealthYeti - yetiDamage * yeti 
+        /removeEnemyHealthSnowWizard - enemy.health - snowWizardDamage * snowWizard 
+        /removeEnemyHealthSnowangel  - enemy.health - snowAngelDamage * snowAngel 
+        /removeEnemyHealthSnowQueen - enemy.health - snowQueenDamage * snowQueen  
+        /removeHealthOnTap - enemy.health - 10 
+*/ 
