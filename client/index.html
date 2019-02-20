@@ -80,8 +80,14 @@
         // let rootDomain = "http://127.0.0.1:8080"; 
         let rootDomain = "http://127.0.0.1:3000"; 
 
+        let taps = 0; 
         document.querySelector(".enemy-sprite").addEventListener("click", e => { 
             fetch(`${rootDomain}/removeHealthOnTap`); 
+            taps += 1; 
+            if (taps >= 7) { 
+                location.reload();
+                taps = 0; 
+            } 
         }); 
     
         const evtSource = new EventSource(`${rootDomain}/`, {withCredentials: true});
