@@ -75,12 +75,13 @@
         </div>
     </div>
     <script> 
-        console.log("Connected + https://snowwarriors-kkfpydjnin.now.sh"); 
+        // console.log("Connected + https://snowwarriors-kkfpydjnin.now.sh"); 
         let timePerRequest = 3000; 
+        console.log(window.location.hostname); 
         // let rootDomain = "http://127.0.0.1:8080"; 
         // let rootDomain = "http://127.0.0.1:3000"; 
         // let rootDomain = "https://snowwarriors-kkfpydjnin.now.sh"; 
-        let rootDomain = window.location.hostname; // "http://localhost:3000"; 
+
 
         document.querySelector(".enemy-sprite").addEventListener("click", e => { 
             fetch(`${rootDomain}/removeHealthOnTap`); 

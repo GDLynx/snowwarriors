@@ -1,4 +1,5 @@
-const http = require("http2"); 
+const http2 = require("http2"); 
+const fs = require("fs"); 
 const events = require('./events');
 // const EventEmitter = require('events');
 
@@ -27,7 +28,8 @@ let game = {
 }
 
 
-const server = http.createServer((req, res) => { 
+const server = http2.createServer((req, res) => { 
+    console.log(__dirname); 
     // console.log(`Listening on port ${port}`)
     res.setHeader("Access-Control-Allow-Origin", "https://gdlynx.github.io");
     // res.setHeader("Content-Type", "text/json");    
@@ -44,8 +46,15 @@ const server = http.createServer((req, res) => {
                 */ 
                 // console.log("subscribing"); 
                 game.enemy.image = "https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
-                events.subscribe(req, res); 
-                events.publish(game); 
+                fs.readFile('./index.html', (err, html) => { 
+                    console.log("Reading HTML"); 
+                    res.writeHeader(200, {"Content-Type": "text/html"}); 
+                    res.write(html); 
+                    res.end(); 
+                }); 
+                // events.subscribe(req, res); 
+                // events.publish(game); 
+
                 /* 
                 const myEmitter = new MyEmitter();
                 myEmitter.on('event', () => {
