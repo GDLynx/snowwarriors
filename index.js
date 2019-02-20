@@ -1,4 +1,4 @@
-const http = require("http"); 
+const http = require("http2"); 
 const events = require('./events');
 // const EventEmitter = require('events');
 
@@ -29,7 +29,7 @@ let game = {
 
 const server = http.createServer((req, res) => { 
     // console.log(`Listening on port ${port}`)
-    res.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:8080");
+    res.setHeader("Access-Control-Allow-Origin", "https://gdlynx.github.io");
     // res.setHeader("Content-Type", "text/json");    
     res.setHeader("Content-Type", "text/event-stream");    
     res.setHeader("Access-Control-Allow-Credentials", "true"); 
@@ -53,9 +53,10 @@ const server = http.createServer((req, res) => {
                 }); 
                 myEmitter.emit('event');
                 */ 
-               console.log("root"); // is output 
+               // console.log("root"); // WAS ALWAYS OUTPUT 
                 break; 
             case "/removeHealthOnTap": 
+                console.log("Removing health"); 
                 game.enemy.health -= 10;  
                 events.subscribe(req, res); 
                 events.publish(game);

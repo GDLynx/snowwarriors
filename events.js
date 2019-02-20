@@ -1,7 +1,7 @@
 // events.js
 const EventEmitter = require('events');
 const emitter = new EventEmitter();
-
+emitter.setMaxListeners(30); 
 function subscribe(req, res) {
 
 	res.writeHead(200, {
