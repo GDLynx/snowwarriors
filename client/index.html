@@ -34,22 +34,27 @@
             height: 120px;
         }
 
-        .coin { 
-            background-color: cyan; 
+        .coin {
+            background-color: cyan;
             -webkit-clip-path: polygon(52% 89%, 23% 54%, 41% 34%, 52% 24%, 65% 34%, 77% 56%);
-            clip-path: polygon(52% 89%, 23% 54%, 41% 34%, 52% 24%, 65% 34%, 77% 56%);            
-            z-index: -100; 
-            width: 4em; 
-            height: 4em; 
-        } 
-        
+            clip-path: polygon(52% 89%, 23% 54%, 41% 34%, 52% 24%, 65% 34%, 77% 56%);
+            z-index: 100;
+            width: 6em;
+            height: 6em;
+            padding: 1em 1em 1em 1em;
+        }
 
+        .players-coins { 
+            color: yellow; 
+            font-size: 24px; 
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="grid">
+            <div class="players-coins"><b></b></div>
             <div class="warriors">
                 <div class="yeti">
                     yeti
@@ -72,31 +77,55 @@
                     <b class="red"></b>
                 </div>
             </div>
+            <!-- ideally the coins should spawn within the same area as the enemy but this was causing a bug -->
+            <div class="coins-area">
+
+            </div>
         </div>
     </div>
     <script> 
 
-        let timePerRequest = 3000; 
+        let timePerRequest = 3000;
         // let rootDomain = "http://127.0.0.1:8080"; 
-        let rootDomain = "http://127.0.0.1:3000"; 
+        let rootDomain = "http://127.0.0.1:3000";
 
-        let taps = 0; 
-        document.querySelector(".enemy-sprite").addEventListener("click", e => { 
-            fetch(`${rootDomain}/removeHealthOnTap`); 
-            taps += 1; 
-            if (taps >= 7) { 
+        let taps = 0;
+
+        document.querySelector(".enemy-sprite").addEventListener("click", e => {
+            fetch(`${rootDomain}/removeHealthOnTap`);
+            taps += 1;
+            if (taps >= 7) {
+                taps = 0;
                 location.reload();
-                taps = 0; 
-            } 
-        }); 
-    
-        const evtSource = new EventSource(`${rootDomain}/`, {withCredentials: true});
-        evtSource.addEventListener('event', function(evt) {
+            }
+        });
+
+        const evtSource = new EventSource(`${rootDomain}/`, { withCredentials: true });
+        evtSource.addEventListener('event', function (evt) {
             const clientSideGame = JSON.parse(evt.data);
-            console.log(clientSideGame); // is never logged 
-            document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image; 
+            document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image;
             document.querySelector(".enemy-health b").innerText = clientSideGame.enemy.health; 
-        }, false); 
+            document.querySelector(".players-coins b").innerText = clientSideGame.player.coins; 
+
+            if (clientSideGame.canDispenseCoins) {
+                for (let i = 0; i < 10; i++) {
+                    document.querySelector(".coins-area").innerHTML += `<div><b class="coin">1</b></div>`;
+                }
+                document.querySelectorAll(".coins-area").forEach((coin, index) => {
+                    coin.addEventListener("click", e => {
+                        e.target.remove();
+                    }); 
+                });
+                window.setTimeout(() => {
+                    document.querySelectorAll(".coin").forEach(coin => {
+                        if (coin) { 
+                            coin.remove(); 
+                            fetch(`${rootDomain}/incrementPlayersCoins`); 
+                        }  
+                    })
+                }, 4000);
+            } 
+        }, false);
 
         /* 
         window.setInterval(() => { 
@@ -118,7 +147,7 @@
             }).catch(err => console.log(err)); 
             * 
         }, timePerRequest); 
-        */ 
+        */
 
     </script>
 </body>

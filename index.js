@@ -53,11 +53,17 @@ const server = http.createServer((req, res) => {
                 }); 
                 myEmitter.emit('event');
                 */ 
-               console.log("root"); // is output 
                 break; 
             case "/removeHealthOnTap": 
                 game.enemy.health -= 10;  
-                events.subscribe(req, res); 
+                if (game.enemy.health <= 0 && !game.canDispenseCoins) { 
+                    game.canDispenseCoins = true; 
+                    game.enemy.health = 100; 
+                    // spawn new enemy 
+                } else { 
+                    game.canDispenseCoins = false; 
+                }
+                events.subscribe(req, res);
                 events.publish(game);
                 // console.log(game.enemy); 
                 // will likekly also need to detect and handle the enemy's death 
@@ -69,6 +75,10 @@ const server = http.createServer((req, res) => {
             case "/removeEnemyHealthSnowAngel": 
                 break; 
             case "/removeEnemyHealthYSnowQueen": 
+                break; 
+            case "/incrementPlayersCoins": 
+                game.player.coins = Number(game.player.coins) + 1; 
+                events.publish(game); 
                 break; 
             default: 
                 break; // not sure if thsis should be here or if this should be return 
@@ -109,4 +119,5 @@ server.listen(port);
         /removeEnemyHealthSnowangel  - enemy.health - snowAngelDamage * snowAngel 
         /removeEnemyHealthSnowQueen - enemy.health - snowQueenDamage * snowQueen  
         /removeHealthOnTap - enemy.health - 10 
+        /incrementPlayersCoins - adds one coin to player's coins (ice shards) 
 */ 
