@@ -6,6 +6,17 @@ const events = require('./events');
 
 const port =  3000; 
 
+// images [tempoary] 
+let bee = "https://images.pexels.com/photos/34220/bee-halictus-macro-pollinator.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+let snowman = "https://images.pexels.com/photos/760110/pexels-photo-760110.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+let demon = "https://images.pexels.com/photos/208984/pexels-photo-208984.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+let wolf ="https://images.pexels.com/photos/326097/pexels-photo-326097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+
+// index 0: snow bee, index 1: snow man , index 2: snow demon, index 3: snow wolf  
+let enemyHealths = [100, 300, 500, 1200]; 
+let enemyImages = [bee, snowman, demon, wolf]; 
+let enemyNames = ["snow bee", "snow man", "snow demon", "snow wolf"]; 
+
 let game = {  
     player:  {
             count: 0, 
@@ -20,13 +31,12 @@ let game = {
             }
         }, 
     enemy: { 
-        image: "", 
+        image: "assets/kmdrgroch.PNG", 
         health: 100, 
-        name: "snow-wolf"
+        name: "Kmndr Groch"
     }, 
     canDispenseCoins: false 
 }
-
 
 const server = http.createServer((req, res) => { 
     // console.log(`Listening on port ${port}`)
@@ -44,7 +54,6 @@ const server = http.createServer((req, res) => {
                 res.end();
                 */ 
                 // console.log("subscribing"); 
-                game.enemy.image = "https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
                 events.subscribe(req, res); 
                 events.publish(game); 
                 /* 
@@ -61,7 +70,11 @@ const server = http.createServer((req, res) => {
                     game.canDispenseCoins = true; 
                     game.enemy.health = 100; 
                     game.player.activeCoins = 10; 
-                    // spawn new enemy 
+
+                    let newEnemyIndex = Math.floor(Math.random() * 4); 
+                    game.enemy.image = enemyImages[newEnemyIndex]; 
+                    game.enemy.name = enemyNames[newEnemyIndex]; 
+                    game.enemy.health = enemyHealths[newEnemyIndex]; 
                 } else { 
                     game.canDispenseCoins = false; 
                     game.player.activeCoins = 0; 

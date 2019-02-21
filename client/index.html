@@ -30,7 +30,7 @@
         }
 
         .enemy .enemy-sprite img {
-            width: 64px;
+            width: 120px;
             height: 120px;
         }
 
@@ -104,7 +104,7 @@
         evtSource.addEventListener('event', function (evt) {
             const clientSideGame = JSON.parse(evt.data);
             document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image;
-            document.querySelector(".enemy-health b").innerText = clientSideGame.enemy.health; 
+            document.querySelector(".enemy-health b").innerText =  `${clientSideGame.enemy.name}: ${clientSideGame.enemy.health}`;  
             document.querySelector(".players-coins b").innerText = clientSideGame.player.coins; 
 
             if (clientSideGame.canDispenseCoins) {
