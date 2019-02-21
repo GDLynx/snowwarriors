@@ -21,7 +21,7 @@ let game = {
     player:  {
             count: 0, 
             health: 100, 
-            coins: 0,
+            coins: 1000,
             activeCoins: 0, 
             warriors: { 
                 yeti: 0, 
@@ -37,6 +37,22 @@ let game = {
     }, 
     canDispenseCoins: false 
 }
+
+function enemyDied() { 
+    if (game.enemy.health <= 0 && !game.canDispenseCoins) { 
+        game.canDispenseCoins = true; 
+        game.enemy.health = 100; 
+        game.player.activeCoins = 10; 
+
+        let newEnemyIndex = Math.floor(Math.random() * 4); 
+        game.enemy.image = enemyImages[newEnemyIndex]; 
+        game.enemy.name = enemyNames[newEnemyIndex]; 
+        game.enemy.health = enemyHealths[newEnemyIndex]; 
+    } else { 
+        game.canDispenseCoins = false; 
+        game.player.activeCoins = 0; 
+    }
+} 
 
 const server = http.createServer((req, res) => { 
     // console.log(`Listening on port ${port}`)
@@ -66,25 +82,25 @@ const server = http.createServer((req, res) => {
                 break; 
             case "/removeHealthOnTap": 
                 game.enemy.health -= 10;  
-                if (game.enemy.health <= 0 && !game.canDispenseCoins) { 
-                    game.canDispenseCoins = true; 
-                    game.enemy.health = 100; 
-                    game.player.activeCoins = 10; 
-
-                    let newEnemyIndex = Math.floor(Math.random() * 4); 
-                    game.enemy.image = enemyImages[newEnemyIndex]; 
-                    game.enemy.name = enemyNames[newEnemyIndex]; 
-                    game.enemy.health = enemyHealths[newEnemyIndex]; 
-                } else { 
-                    game.canDispenseCoins = false; 
-                    game.player.activeCoins = 0; 
-                }
+                enemyDied(); 
                 events.subscribe(req, res);
                 events.publish(game);
                 // console.log(game.enemy); 
                 // will likekly also need to detect and handle the enemy's death 
                 break; 
+            case "/buyYeti": 
+                if (game.player.coins >= 100) { 
+                    game.player.coins -= 100; 
+                    game.player.warriors.yeti += 1; 
+                }
+                events.subscribe(req, res);
+                events.publish(game);
+                break; 
             case "/removeEnemyHealthYeti": 
+                game.enemy.health -= 5 * game.player.warriors.yeti; 
+                enemyDied(); 
+                events.subscribe(req, res);
+                events.publish(game);
                 break; 
             case "/removeEnemyHealthSnowWizard": 
                 break;

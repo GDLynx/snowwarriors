@@ -28,7 +28,7 @@
             height: 4em;
             margin: 2em 2em 2em 2em;
         }
-
+ 
         .enemy .enemy-sprite img {
             width: 120px;
             height: 120px;
@@ -83,6 +83,10 @@
             </div>
         </div>
     </div>
+    <div class="refresh">
+        <button>Refresh</button>
+        <p><em>This game contains bugs which are "fixable" by refreshing the page</em></p>
+    </div>
     <script> 
 
         let timePerRequest = 3000;
@@ -90,6 +94,10 @@
         let rootDomain = "http://127.0.0.1:3000";
 
         let taps = 0;
+
+        let clientSideYetis = 0; 
+
+        document.querySelector(".refresh button")>addEventListener("click", e => location.reload()); 
 
         document.querySelector(".enemy-sprite").addEventListener("click", e => {
             fetch(`${rootDomain}/removeHealthOnTap`);
@@ -100,12 +108,34 @@
             }
         });
 
+        document.querySelector(".yeti").addEventListener("click", e => { 
+            fetch(`${rootDomain}/buyYeti`); 
+        }); 
+
+        // warriors attack 
+        window.setInterval(() => { 
+            if (clientSideYetis >= 1) { 
+                fetch(`${rootDomain}/removeEnemyHealthYeti`); 
+                taps += 1; 
+                if (taps >= 7) {
+                    taps = 0;
+                    location.reload();
+                }
+            } 
+        }, 1000); 
+
         const evtSource = new EventSource(`${rootDomain}/`, { withCredentials: true });
         evtSource.addEventListener('event', function (evt) {
             const clientSideGame = JSON.parse(evt.data);
             document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image;
-            document.querySelector(".enemy-health b").innerText =  `${clientSideGame.enemy.name}: ${clientSideGame.enemy.health}`;  
-            document.querySelector(".players-coins b").innerText = clientSideGame.player.coins; 
+            document.querySelector(".enemy-health b").innerText =`${clientSideGame.enemy.name}: ${clientSideGame.enemy.health}`;  
+
+            /// Player's Warriors 
+            document.querySelector(".yeti").innerText = `yetis: ${clientSideGame.player.warriors.yeti} $100`;  
+            clientSideYetis = Number(clientSideGame.player.warriors.yeti); 
+
+            /// Player's Coins 
+            document.querySelector(".players-coins b").innerText = `$${clientSideGame.player.coins}`; 
 
             if (clientSideGame.canDispenseCoins) {
                 for (let i = 0; i < clientSideGame.player.activeCoins; i++) {
