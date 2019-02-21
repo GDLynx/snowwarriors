@@ -108,23 +108,25 @@
             document.querySelector(".players-coins b").innerText = clientSideGame.player.coins; 
 
             if (clientSideGame.canDispenseCoins) {
-                for (let i = 0; i < 10; i++) {
+                for (let i = 0; i < clientSideGame.player.activeCoins; i++) {
                     document.querySelector(".coins-area").innerHTML += `<div><b class="coin">1</b></div>`;
                 }
                 document.querySelectorAll(".coins-area").forEach((coin, index) => {
                     coin.addEventListener("click", e => {
                         e.target.remove();
+                        fetch(`${rootDomain}/incrementPlayersCoins`); 
                     }); 
                 });
                 window.setTimeout(() => {
                     document.querySelectorAll(".coin").forEach(coin => {
                         if (coin) { 
                             coin.remove(); 
-                            fetch(`${rootDomain}/incrementPlayersCoins`); 
                         }  
-                    })
+                    }); 
+                    fetch(`${rootDomain}/removeCoins`); 
                 }, 4000);
             } 
+
         }, false);
 
         /* 

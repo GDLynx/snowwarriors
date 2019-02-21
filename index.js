@@ -11,6 +11,7 @@ let game = {
             count: 0, 
             health: 100, 
             coins: 0,
+            activeCoins: 0, 
             warriors: { 
                 yeti: 0, 
                 snowWizard: 0, 
@@ -59,9 +60,11 @@ const server = http.createServer((req, res) => {
                 if (game.enemy.health <= 0 && !game.canDispenseCoins) { 
                     game.canDispenseCoins = true; 
                     game.enemy.health = 100; 
+                    game.player.activeCoins = 10; 
                     // spawn new enemy 
                 } else { 
                     game.canDispenseCoins = false; 
+                    game.player.activeCoins = 0; 
                 }
                 events.subscribe(req, res);
                 events.publish(game);
@@ -78,6 +81,13 @@ const server = http.createServer((req, res) => {
                 break; 
             case "/incrementPlayersCoins": 
                 game.player.coins = Number(game.player.coins) + 1; 
+                game.player.activeCoins -= 1; 
+                events.subscribe(req, res);
+                events.publish(game); 
+                break; 
+            case "/removeCoins":
+                game.player.activeCoins = 0; 
+                events.subscribe(req, res);
                 events.publish(game); 
                 break; 
             default: 
@@ -95,6 +105,7 @@ server.listen(port);
                     count: 0, 
                     health: 100, 
                     coins: 0,
+                    activeCoins: 0, 
                     warriors: { 
                         yeti: 0, 
                         snowWizard: 0, 
