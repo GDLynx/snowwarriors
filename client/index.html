@@ -5,7 +5,14 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Snow Warriors</title>
+    <link rel="manifest" href="/manifest.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        if('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/sw.js');
+        };
+    </script>
+    <meta name="theme-color" content="#db5945">
     <style>
         /* Utillities */
 
@@ -71,7 +78,7 @@
             </div>
             <div class="enemy">
                 <div class="enemy-sprite">
-                    <img src="" />
+                    <img src="" alt="enemy-sprite" />
                 </div>
                 <div class="enemy-health">
                     <b class="red"></b>

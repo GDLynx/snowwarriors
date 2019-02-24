@@ -1,0 +1,14 @@
+{
+    "name": "SNow Warriors",
+    "short_name": "snowwarriors",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "theme_color": "red",
+    "background_color":"green",
+    "icons": [
+      {
+        "src": "/assets/icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }]
+  }
