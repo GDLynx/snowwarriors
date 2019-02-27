@@ -21,7 +21,7 @@ let game = {
     player:  {
             count: 0, 
             health: 100, 
-            coins: 1000,
+            coins: 2321000,
             activeCoins: 0, 
             warriors: { 
                 yeti: 0, 
@@ -96,6 +96,30 @@ const server = http.createServer((req, res) => {
                 events.subscribe(req, res);
                 events.publish(game);
                 break; 
+            case "/buySnowWizard": 
+                if (game.player.coins >= 400) { 
+                    game.player.coins -= 400; 
+                    game.player.warriors.snowWizard += 1; 
+                }
+                events.subscribe(req, res);
+                events.publish(game);
+                break; 
+            case "/buySnowAngel": 
+                if (game.player.coins >= 1200) { 
+                    game.player.coins -= 1200; 
+                    game.player.warriors.snowAngel += 1; 
+                }
+                events.subscribe(req, res);
+                events.publish(game);
+                break; 
+            case "/buySnowQueen": 
+                if (game.player.coins >= 3300) { 
+                    game.player.coins -= 3300; 
+                    game.player.warriors.snowQueen += 1; 
+                }
+                events.subscribe(req, res);
+                events.publish(game);
+                break; 
             case "/removeEnemyHealthYeti": 
                 game.enemy.health -= 5 * game.player.warriors.yeti; 
                 enemyDied(); 
@@ -103,10 +127,22 @@ const server = http.createServer((req, res) => {
                 events.publish(game);
                 break; 
             case "/removeEnemyHealthSnowWizard": 
+                game.enemy.health -= 10 * game.player.warriors.snowWizard; 
+                enemyDied(); 
+                events.subscribe(req, res);
+                events.publish(game);
                 break;
             case "/removeEnemyHealthSnowAngel": 
+                game.enemy.health -= 20 * game.player.warriors.snowAngel; 
+                enemyDied(); 
+                events.subscribe(req, res);
+                events.publish(game);
                 break; 
-            case "/removeEnemyHealthYSnowQueen": 
+            case "/removeEnemyHealthSnowQueen":
+                game.enemy.health -= 50 * game.player.warriors.snowQueen; 
+                enemyDied(); 
+                events.subscribe(req, res);
+                events.publish(game);
                 break; 
             case "/incrementPlayersCoins": 
                 game.player.coins = Number(game.player.coins) + 1; 

@@ -7,6 +7,12 @@
     <title>Snow Warriors</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        /* general */ 
+        body { 
+            font-style: bold; 
+            font-size: 25px; 
+        }
+
         /* Utillities */
 
         .red {
@@ -21,17 +27,22 @@
 
         /* game entities */
 
-        .warriors div {
+        .warrior-button {
             background-color: cyan;
             color: blue;
             width: 4em;
             height: 4em;
             margin: 2em 2em 2em 2em;
+            padding: 1em 1em 1em 1em; 
+            font-size: 18px; 
+            font-style: bold; 
+            cursor: pointer; 
         }
  
         .enemy .enemy-sprite img {
-            width: 120px;
-            height: 120px;
+            cursor: crosshair; 
+            width: 200px;
+            height: 200px;
         }
 
         .coin {
@@ -42,11 +53,13 @@
             width: 6em;
             height: 6em;
             padding: 1em 1em 1em 1em;
+            cursor: pointer;
         }
 
         .players-coins { 
-            color: yellow; 
-            font-size: 24px; 
+            color: gold; 
+            font-size: 32px; 
+            font-style: bold; 
         }
     </style>
 </head>
@@ -56,16 +69,16 @@
         <div class="grid">
             <div class="players-coins"><b></b></div>
             <div class="warriors">
-                <div class="yeti">
+                <div class="yeti warrior-button">
                     yeti
                 </div>
-                <div class="snow-wizard">
+                <div class="snow-wizard warrior-button">
                     snow wizard
                 </div>
-                <div class="snow angel">
+                <div class="snow-angel warrior-button">
                     snow angel
                 </div>
-                <div class="snow-queen">
+                <div class="snow-queen warrior-button">
                     snow queen
                 </div>
             </div>
@@ -95,7 +108,10 @@
 
         let taps = 0;
 
-        let clientSideYetis = 0; 
+        let clientSideYetis = 0;
+        let clientSideSnowWizards = 0;
+        let clientSideSnowAngels = 0;
+        let clientSideSnowQueens = 0; 
 
         document.querySelector(".refresh button")>addEventListener("click", e => location.reload()); 
 
@@ -112,7 +128,19 @@
             fetch(`${rootDomain}/buyYeti`); 
         }); 
 
-        // warriors attack 
+        document.querySelector(".snow-wizard").addEventListener("click", e => { 
+            fetch(`${rootDomain}/buySnowWizard`); 
+        }); 
+
+        document.querySelector(".snow-angel").addEventListener("click", e => { 
+            fetch(`${rootDomain}/buySnowAngel`); 
+        }); 
+
+        document.querySelector(".snow-queen").addEventListener("click", e => { 
+            fetch(`${rootDomain}/buySnowQueen`); 
+        }); 
+
+        // warriors attack (may need to adapt this logic to work so that the work is done on server)
         window.setInterval(() => { 
             if (clientSideYetis >= 1) { 
                 fetch(`${rootDomain}/removeEnemyHealthYeti`); 
@@ -122,7 +150,41 @@
                     location.reload();
                 }
             } 
-        }, 1000); 
+        }, 1100); // 1200 
+
+        window.setInterval(() => { 
+            if (clientSideSnowWizards >= 1) { 
+                fetch(`${rootDomain}/removeEnemyHealthSnowWizard`); 
+                taps += 1; 
+                if (taps >= 7) {
+                    taps = 0;
+                    location.reload();
+                }
+            } 
+        }, 1200); // 1200 
+
+        window.setInterval(() => { 
+            if (clientSideSnowAngels >= 1) { 
+                fetch(`${rootDomain}/removeEnemyHealthSnowAngel`); 
+                taps += 1; 
+                if (taps >= 7) {
+                    taps = 0;
+                    location.reload();
+                }
+            } 
+        }, 1500); // 1500
+
+        window.setInterval(() => { 
+            if (clientSideSnowQueens >= 1) { 
+                fetch(`${rootDomain}/removeEnemyHealthSnowQueen`); 
+                taps += 1; 
+                if (taps >= 7) {
+                    taps = 0;
+                    location.reload();
+                }
+            } 
+        }, 2400); //2400 
+
 
         const evtSource = new EventSource(`${rootDomain}/`, { withCredentials: true });
         evtSource.addEventListener('event', function (evt) {
@@ -133,6 +195,15 @@
             /// Player's Warriors 
             document.querySelector(".yeti").innerText = `yetis: ${clientSideGame.player.warriors.yeti} $100`;  
             clientSideYetis = Number(clientSideGame.player.warriors.yeti); 
+
+            document.querySelector(".snow-wizard").innerText = `snow wizards: ${clientSideGame.player.warriors.snowWizard} $400`;  
+            clientSideSnowWizards = Number(clientSideGame.player.warriors.snowWizard); 
+
+            document.querySelector(".snow-angel").innerText = `snow angels: ${clientSideGame.player.warriors.snowAngel} $1200`;  
+            clientSideSnowAngels = Number(clientSideGame.player.warriors.snowAngel); 
+
+            document.querySelector(".snow-queen").innerText = `snow queens: ${clientSideGame.player.warriors.snowQueen} $3300`;  
+            clientSideSnowQueens = Number(clientSideGame.player.warriors.snowQueen); 
 
             /// Player's Coins 
             document.querySelector(".players-coins b").innerText = `$${clientSideGame.player.coins}`; 
