@@ -101,158 +101,132 @@
         <p><em>This game contains bugs which are "fixable" by refreshing the page</em></p>
     </div>
     <script> 
+        window.onload = () => { 
+            // wrap in self invokving anomynous function 
+            /// Setup 
+            let timePerRequest = 3000;
+            // let rootDomain = "http://127.0.0.1:8080"; 
+            let rootDomain = "http://127.0.0.1:3000";
 
-        let timePerRequest = 3000;
-        // let rootDomain = "http://127.0.0.1:8080"; 
-        let rootDomain = "http://127.0.0.1:3000";
+            let taps = 0;
 
-        let taps = 0;
+            let clientSideYetis = 0;
+            let clientSideSnowWizards = 0;
+            let clientSideSnowAngels = 0;
+            let clientSideSnowQueens = 0; 
 
-        let clientSideYetis = 0;
-        let clientSideSnowWizards = 0;
-        let clientSideSnowAngels = 0;
-        let clientSideSnowQueens = 0; 
+            /// Get Elements 
+            let coinAreaElement = document.querySelectorAll(".coins-area"); 
+            
+            let enemySpriteElement = document.querySelector(".enemy-sprite"); 
+            
+            let yetiElement = document.querySelector(".yeti"); 
+            let snowWizardElement = document.querySelector(".snow-wizard");
+            let snowAngelElement = document.querySelector(".snow-angel");
+            let snowQueenElement = document.querySelector(".snow-queen");
 
-        document.querySelector(".refresh button")>addEventListener("click", e => location.reload()); 
-
-        document.querySelector(".enemy-sprite").addEventListener("click", e => {
-            fetch(`${rootDomain}/removeHealthOnTap`);
-            taps += 1;
-            if (taps >= 7) {
-                taps = 0;
-                location.reload();
+            //// Functions 
+            let removeEnemyHealth = (warrior, url) => { 
+                // ideally "url" should sanitized 
+                if (warrior >= 1) { 
+                    fetch(url.toString()); 
+                    taps += 1; 
+                    if (taps >= 7) {
+                        taps = 0;
+                        location.reload();
+                    }
+                } 
             }
-        });
 
-        document.querySelector(".yeti").addEventListener("click", e => { 
-            fetch(`${rootDomain}/buyYeti`); 
-        }); 
+            // warriors attack (may need to adapt this logic to work so that the work is done on server)
+            window.setInterval(() => { 
+                removeEnemyHealth(clientSideYetis, `${rootDomain}/removeEnemyHealthYeti`)
+            }, 1100);  
 
-        document.querySelector(".snow-wizard").addEventListener("click", e => { 
-            fetch(`${rootDomain}/buySnowWizard`); 
-        }); 
+            window.setInterval(() => { 
+                removeEnemyHealth(clientSideSnowWizards, `${rootDomain}/removeEnemyHealthSnowWizard`)
+            }, 1200); // 1200 
 
-        document.querySelector(".snow-angel").addEventListener("click", e => { 
-            fetch(`${rootDomain}/buySnowAngel`); 
-        }); 
+            window.setInterval(() => { 
+                removeEnemyHealth(clientSideSnowAngels, `${rootDomain}/removeEnemyHealthSnowAngel`)
+            }, 1500); // 1500
 
-        document.querySelector(".snow-queen").addEventListener("click", e => { 
-            fetch(`${rootDomain}/buySnowQueen`); 
-        }); 
+            window.setInterval(() => { 
+                removeEnemyHealth(clientSideSnowQueens, `${rootDomain}/removeEnemyHealthSnowQueen`)
+            }, 2400); //2400 
 
-        // warriors attack (may need to adapt this logic to work so that the work is done on server)
-        window.setInterval(() => { 
-            if (clientSideYetis >= 1) { 
-                fetch(`${rootDomain}/removeEnemyHealthYeti`); 
-                taps += 1; 
+            document.querySelector(".refresh button")>addEventListener("click", e => location.reload()); 
+
+            enemySpriteElement.addEventListener("click", e => {
+                fetch(`${rootDomain}/removeHealthOnTap`);
+                taps += 1;
                 if (taps >= 7) {
                     taps = 0;
                     location.reload();
                 }
-            } 
-        }, 1100); // 1200 
+            });
 
-        window.setInterval(() => { 
-            if (clientSideSnowWizards >= 1) { 
-                fetch(`${rootDomain}/removeEnemyHealthSnowWizard`); 
-                taps += 1; 
-                if (taps >= 7) {
-                    taps = 0;
-                    location.reload();
-                }
-            } 
-        }, 1200); // 1200 
+            yetiElement.addEventListener("click", e => { 
+                console.log("Buying yeti"); 
+                fetch(`${rootDomain}/buyYeti`); 
+            }); 
 
-        window.setInterval(() => { 
-            if (clientSideSnowAngels >= 1) { 
-                fetch(`${rootDomain}/removeEnemyHealthSnowAngel`); 
-                taps += 1; 
-                if (taps >= 7) {
-                    taps = 0;
-                    location.reload();
-                }
-            } 
-        }, 1500); // 1500
+            snowWizardElement.addEventListener("click", e => { 
+                fetch(`${rootDomain}/buySnowWizard`); 
+            }); 
 
-        window.setInterval(() => { 
-            if (clientSideSnowQueens >= 1) { 
-                fetch(`${rootDomain}/removeEnemyHealthSnowQueen`); 
-                taps += 1; 
-                if (taps >= 7) {
-                    taps = 0;
-                    location.reload();
-                }
-            } 
-        }, 2400); //2400 
+            snowAngelElement.addEventListener("click", e => { 
+                fetch(`${rootDomain}/buySnowAngel`); 
+            }); 
 
+            snowQueenElement.addEventListener("click", e => { 
+                fetch(`${rootDomain}/buySnowQueen`); 
+            }); 
 
-        const evtSource = new EventSource(`${rootDomain}/`, { withCredentials: true });
-        evtSource.addEventListener('event', function (evt) {
-            const clientSideGame = JSON.parse(evt.data);
-            document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image;
-            document.querySelector(".enemy-health b").innerText =`${clientSideGame.enemy.name}: ${clientSideGame.enemy.health}`;  
+            /// Obtain Updates and Update Client Appropriately 
+            const evtSource = new EventSource(`${rootDomain}/`, { withCredentials: true });
+            evtSource.addEventListener('event', evt => {
+                const clientSideGame = JSON.parse(evt.data);
+                enemySpriteElement.querySelector("img").src = clientSideGame.enemy.image;
+                document.querySelector(".enemy-health").querySelector("b").innerText =`${clientSideGame.enemy.name}: ${clientSideGame.enemy.health}`;  
+                
+                /// Player's Warriors 
+                yetiElement.innerText = `yetis: ${clientSideGame.player.warriors.yeti} $100`;  
+                clientSideYetis = Number(clientSideGame.player.warriors.yeti); 
 
-            /// Player's Warriors 
-            document.querySelector(".yeti").innerText = `yetis: ${clientSideGame.player.warriors.yeti} $100`;  
-            clientSideYetis = Number(clientSideGame.player.warriors.yeti); 
+                snowWizardElement.innerText = `snow wizards: ${clientSideGame.player.warriors.snowWizard} $400`;  
+                clientSideSnowWizards = Number(clientSideGame.player.warriors.snowWizard); 
 
-            document.querySelector(".snow-wizard").innerText = `snow wizards: ${clientSideGame.player.warriors.snowWizard} $400`;  
-            clientSideSnowWizards = Number(clientSideGame.player.warriors.snowWizard); 
+                snowAngelElement.innerText = `snow angels: ${clientSideGame.player.warriors.snowAngel} $1200`;  
+                clientSideSnowAngels = Number(clientSideGame.player.warriors.snowAngel); 
 
-            document.querySelector(".snow-angel").innerText = `snow angels: ${clientSideGame.player.warriors.snowAngel} $1200`;  
-            clientSideSnowAngels = Number(clientSideGame.player.warriors.snowAngel); 
+                snowQueenElement.innerText = `snow queens: ${clientSideGame.player.warriors.snowQueen} $3300`;  
+                clientSideSnowQueens = Number(clientSideGame.player.warriors.snowQueen); 
 
-            document.querySelector(".snow-queen").innerText = `snow queens: ${clientSideGame.player.warriors.snowQueen} $3300`;  
-            clientSideSnowQueens = Number(clientSideGame.player.warriors.snowQueen); 
-
-            /// Player's Coins 
-            document.querySelector(".players-coins b").innerText = `$${clientSideGame.player.coins}`; 
-
-            if (clientSideGame.canDispenseCoins) {
-                for (let i = 0; i < clientSideGame.player.activeCoins; i++) {
-                    document.querySelector(".coins-area").innerHTML += `<div><b class="coin">1</b></div>`;
-                }
-                document.querySelectorAll(".coins-area").forEach((coin, index) => {
-                    coin.addEventListener("click", e => {
-                        e.target.remove();
-                        fetch(`${rootDomain}/incrementPlayersCoins`); 
-                    }); 
-                });
-                window.setTimeout(() => {
-                    document.querySelectorAll(".coin").forEach(coin => {
-                        if (coin) { 
-                            coin.remove(); 
-                        }  
-                    }); 
-                    fetch(`${rootDomain}/removeCoins`); 
-                }, 4000);
-            } 
-
-        }, false);
-
-        /* 
-        window.setInterval(() => { 
-            /* "
-            clientSideGame" is the client side representation of the game [object], but tthese are too be 
-            kept seperate as the client-side game will likely always be one step in front/behind the 
-            original [server side] game object 
-            * 
-            fetch('http://localhost:3000/').then(res => res.json().then(clientSideGame => { 
-                document.querySelector(".enemy-sprite img").src = clientSideGame.enemy.image; 
-                document.querySelector(".enemy-health b").innerText = clientSideGame.enemy.health; 
-                console.log("Upadting"); 
-            })).catch(err => console.log(err)); 
-
-            /* 
-            fetch('http://localhost:3000/', 
-            { 
-                method: "POST", body: JSON.stringify({content: "friend"})
-            }).catch(err => console.log(err)); 
-            * 
-        }, timePerRequest); 
-        */
-
+                /// Player's Coins 
+                document.querySelector(".players-coins b").innerText = `$${clientSideGame.player.coins}`; 
+                
+                if (clientSideGame.canDispenseCoins) {
+                    for (let i = 0; i < clientSideGame.player.activeCoins; i++) {
+                        document.querySelector(".coins-area").innerHTML += `<div><b class="coin">1</b></div>`;
+                    }
+                    coinAreaElement.forEach((coin, index) => {
+                        coin.addEventListener("click", e => {
+                            e.target.remove();
+                            fetch(`${rootDomain}/incrementPlayersCoins`); 
+                        }); 
+                    });
+                    window.setTimeout(() => {
+                        document.querySelectorAll(".coin").forEach(coin => {
+                            if (coin) { 
+                                coin.remove(); 
+                            }  
+                        }); 
+                        fetch(`${rootDomain}/removeCoins`); 
+                    }, 4000);
+                } 
+            }, false);
+        } 
     </script>
 </body>
-
 </html>

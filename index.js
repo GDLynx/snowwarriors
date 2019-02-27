@@ -1,10 +1,11 @@
+/// Setup 
 const http = require("http"); 
 const events = require('./events');
 // const EventEmitter = require('events');
 
 // class MyEmitter extends EventEmitter {}
 
-const port =  3000; 
+const port =  3000; // port number may need to come from the envrionemnt variables 
 
 // images [tempoary] 
 let bee = "https://images.pexels.com/photos/34220/bee-halictus-macro-pollinator.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
@@ -21,7 +22,7 @@ let game = {
     player:  {
             count: 0, 
             health: 100, 
-            coins: 2321000,
+            coins: 0,
             activeCoins: 0, 
             warriors: { 
                 yeti: 0, 
@@ -54,106 +55,94 @@ function enemyDied() {
     }
 } 
 
+/// Game Functions 
+const update = (req, res, game )=> { 
+    events.subscribe(req, res); 
+    events.publish(game); 
+}
+
+const buyWarrior = (warrior, cost) => { // not sure why but this code failed 
+    if (game.player.coins >= cost) { 
+        game.player.coins -= cost; 
+        warrior += 1; 
+    }
+}
+
+/// Server 
 const server = http.createServer((req, res) => { 
-    // console.log(`Listening on port ${port}`)
     res.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:8080");
-    // res.setHeader("Content-Type", "text/json");    
     res.setHeader("Content-Type", "text/event-stream");    
     res.setHeader("Access-Control-Allow-Credentials", "true"); 
     if (req.method == "GET" || req.method == "get") { 
         switch (req.url) { 
             case "/": 
-                /* 
-                console.log("accepting request"); 
-                game.enemy.image = "https://images.pexels.com/photos/38438/rattlesnake-toxic-snake-dangerous-38438.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
-                res.write(JSON.stringify(game)); 
-                res.end();
-                */ 
-                // console.log("subscribing"); 
-                events.subscribe(req, res); 
-                events.publish(game); 
-                /* 
-                const myEmitter = new MyEmitter();
-                myEmitter.on('event', () => {
-                    console.log('an event occurred!');
-                }); 
-                myEmitter.emit('event');
-                */ 
+                update(req, res, game); 
                 break; 
             case "/removeHealthOnTap": 
                 game.enemy.health -= 10;  
                 enemyDied(); 
-                events.subscribe(req, res);
-                events.publish(game);
-                // console.log(game.enemy); 
-                // will likekly also need to detect and handle the enemy's death 
+                update(req, res, game); 
                 break; 
             case "/buyYeti": 
+                // buyWarrior(game.player.warriors.yeti, 100); 
                 if (game.player.coins >= 100) { 
                     game.player.coins -= 100; 
                     game.player.warriors.yeti += 1; 
                 }
-                events.subscribe(req, res);
-                events.publish(game);
+                update(req, res, game); 
                 break; 
             case "/buySnowWizard": 
+                // buyWarrior(game.player.warriors.snowWizard, 400); 
                 if (game.player.coins >= 400) { 
                     game.player.coins -= 400; 
                     game.player.warriors.snowWizard += 1; 
                 }
-                events.subscribe(req, res);
-                events.publish(game);
+                update(req, res, game); 
                 break; 
             case "/buySnowAngel": 
+                // buyWarrior(game.player.warriors.snowAngel, 1200); 
                 if (game.player.coins >= 1200) { 
                     game.player.coins -= 1200; 
                     game.player.warriors.snowAngel += 1; 
                 }
-                events.subscribe(req, res);
-                events.publish(game);
+                update(req, res, game); 
                 break; 
             case "/buySnowQueen": 
+                // buyWarrior(game.player.warriors.snowQueen, 3300); 
                 if (game.player.coins >= 3300) { 
                     game.player.coins -= 3300; 
                     game.player.warriors.snowQueen += 1; 
-                }
-                events.subscribe(req, res);
-                events.publish(game);
+                } 
+                update(req, res, game); 
                 break; 
             case "/removeEnemyHealthYeti": 
                 game.enemy.health -= 5 * game.player.warriors.yeti; 
                 enemyDied(); 
-                events.subscribe(req, res);
-                events.publish(game);
+                update(req, res, game); 
                 break; 
             case "/removeEnemyHealthSnowWizard": 
                 game.enemy.health -= 10 * game.player.warriors.snowWizard; 
                 enemyDied(); 
-                events.subscribe(req, res);
-                events.publish(game);
+                update(req, res, game); 
                 break;
             case "/removeEnemyHealthSnowAngel": 
                 game.enemy.health -= 20 * game.player.warriors.snowAngel; 
                 enemyDied(); 
-                events.subscribe(req, res);
-                events.publish(game);
+                update(req, res, game); 
                 break; 
             case "/removeEnemyHealthSnowQueen":
                 game.enemy.health -= 50 * game.player.warriors.snowQueen; 
                 enemyDied(); 
-                events.subscribe(req, res);
-                events.publish(game);
+                update(req, res, game); 
                 break; 
             case "/incrementPlayersCoins": 
                 game.player.coins = Number(game.player.coins) + 1; 
                 game.player.activeCoins -= 1; 
-                events.subscribe(req, res);
-                events.publish(game); 
+                update(req, res, game); 
                 break; 
             case "/removeCoins":
                 game.player.activeCoins = 0; 
-                events.subscribe(req, res);
-                events.publish(game); 
+                update(req, res, game); 
                 break; 
             default: 
                 break; // not sure if thsis should be here or if this should be return 
@@ -162,38 +151,3 @@ const server = http.createServer((req, res) => {
 }); 
 
 server.listen(port); 
-
-/* 
-    game: 
-        {  
-            player:  {
-                    count: 0, 
-                    health: 100, 
-                    coins: 0,
-                    activeCoins: 0, 
-                    warriors: { 
-                        yeti: 0, 
-                        snowWizard: 0, 
-                        snowAngel: 0, 
-                        snowQueen: 0 
-                    }
-                }, 
-            enemy: { 
-                image: "", 
-                health: 100, 
-                name: "snow-wolf" 
-            }, 
-            canDispenseCoins: false 
-        }
-
-    routes [ - actions]: 
-        / - triggered by setInterval, this route will also determine whether the client should dispense coins 
-            [still unsure about how they will be removed] 
-        /removeEnemyHealthYeti - yetiDamage * yeti 
-                                    [where yeti is the number of yetis]
-        /removeEnemyHealthSnowWizard - enemy.health - snowWizardDamage * snowWizard 
-        /removeEnemyHealthSnowangel  - enemy.health - snowAngelDamage * snowAngel 
-        /removeEnemyHealthSnowQueen - enemy.health - snowQueenDamage * snowQueen  
-        /removeHealthOnTap - enemy.health - 10 
-        /incrementPlayersCoins - adds one coin to player's coins (ice shards) 
-*/ 
