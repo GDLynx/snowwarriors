@@ -77,13 +77,15 @@ const server = http.createServer((req, res) => {
     // res.setHeader("Access-Control-Allow-Origin", "https://gdlynx.github.io/");
     // res.setHeader("Access-Control-Allow-Origin", "*");
     // req.setHeader("Access-Control-Allow-Origin", "https://gdlynx.github.io/");
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Access-Control-Allow-Origin", "https://gdlynx.github.io");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.setHeader("Content-Type", "text/event-stream");    
-    // res.setHeader("Access-Control-Allow-Credentials", "true"); 
+    res.setHeader("Access-Control-Allow-Credentials", "true"); 
     if (req.method == "GET" || req.method == "get") { 
         switch (req.url) { 
             case "/": 
+                console.log("Req: " + req); 
+                console.log("Res: " + res); 
                 update(req, res, game); 
                 break; 
             case "/removeHealthOnTap": 
