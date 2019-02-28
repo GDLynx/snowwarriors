@@ -8,10 +8,14 @@ const events = require('./events');
 const port =  3000; // port number may need to come from the envrionemnt variables 
 
 // images [tempoary] 
-let bee = "https://images.pexels.com/photos/34220/bee-halictus-macro-pollinator.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
-let snowman = "https://images.pexels.com/photos/760110/pexels-photo-760110.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
-let demon = "https://images.pexels.com/photos/208984/pexels-photo-208984.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
-let wolf ="https://images.pexels.com/photos/326097/pexels-photo-326097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+// let bee = "https://images.pexels.com/photos/34220/bee-halictus-macro-pollinator.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+// let snowman = "https://images.pexels.com/photos/760110/pexels-photo-760110.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+// let demon = "https://images.pexels.com/photos/208984/pexels-photo-208984.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+// let wolf ="https://images.pexels.com/photos/326097/pexels-photo-326097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; 
+let bee = "assets/snowbee.png";
+let snowman = "assets/snowman.png";
+let demon = "assets/snowdemon.png";
+let wolf = "assets/snowwolf.png"; 
 
 // index 0: snow bee, index 1: snow man , index 2: snow demon, index 3: snow wolf  
 let enemyHealths = [100, 300, 500, 1200]; 
@@ -70,9 +74,13 @@ const buyWarrior = (warrior, cost) => { // not sure why but this code failed
 
 /// Server 
 const server = http.createServer((req, res) => { 
-    res.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:8080");
+    // res.setHeader("Access-Control-Allow-Origin", "https://gdlynx.github.io/");
+    // res.setHeader("Access-Control-Allow-Origin", "*");
+    // req.setHeader("Access-Control-Allow-Origin", "https://gdlynx.github.io/");
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.setHeader("Content-Type", "text/event-stream");    
-    res.setHeader("Access-Control-Allow-Credentials", "true"); 
+    // res.setHeader("Access-Control-Allow-Credentials", "true"); 
     if (req.method == "GET" || req.method == "get") { 
         switch (req.url) { 
             case "/": 
